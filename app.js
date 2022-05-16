@@ -1,13 +1,25 @@
 const http = require('http');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const server = http.createServer((req, res) => {
-  console.log(req.url, req.method, req.headers);
-  res.setHeader('Content-Type', 'text/html');
-  res.write('<html>');
-  res.write('<head><title>My First Page</title></head>');
-  res.write('<body><h1>Hello from my Node.js server</h1></body>');
-  res.write('</html>');
-  res.end();
+const app = express();
+
+app.use(bodyParser.urlencoded({extended:false}));
+
+app.use('/add-product', (req, res, next) => {
+  console.log("In another middleware");
+  res.send('<form action="/product" method="POST"><input type="text" name="title"><button type="submit">Add product</button><form>')
 });
 
-server.listen(3000);
+app.use('/product', (req, res, next) => {
+  console.log(req.body);
+  res.redirect('/');
+})
+
+app.use('/', (req, res, next) => {
+  console.log("In another middleware");
+  res.send('<h1>Hello from express</h1>')
+});
+
+
+app.listen(3000);
